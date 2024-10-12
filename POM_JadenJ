@@ -2,73 +2,119 @@
 # Name: Jaden Johnson
 # IDE: VSCode
 
-# 1. Import necessary modules
-# 2. Create the main window with a unique title, size, background color, and branding
-# 3. Add widgets for selecting and customizing pizza orders
-# 4. Add a button to place the order and display order status
-# 5. Add a button to view order history
-# 6. Define functions to handle order placement, status updates, and order history
-# 7. Run the main event loop
-
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 
 # Function to place an order
 def place_order():
     size = size_var.get()
     toppings = [topping for topping, var in toppings_vars.items() if var.get()]
+    if not size:
+        messagebox.showerror("Input Error", "Please select a pizza size.")
+        return
+    if not toppings:
+        messagebox.showerror("Input Error", "Please select at least one topping.")
+        return
     order = f"Size: {size}, Toppings: {', '.join(toppings)}"
     order_status.set(f"Order placed: {order}")
     order_history.append(order)
     messagebox.showinfo("Order Status", "Your order has been placed successfully!")
-
+    
 # Function to view order history
 def view_order_history():
+    if not order_history:
+        messagebox.showinfo("Order History", "No orders placed yet.")
+        return
     history = "\n".join(order_history)
     messagebox.showinfo("Order History", f"Order History:\n{history}")
 
+# Function to open the main window
+def open_main_window():
+    main_window = tk.Toplevel(root)
+    main_window.title("Jaden's Pizzeria")
+    main_window.geometry("600x600")
+    main_window.configure(bg="lightyellow")
+
+    # Branding
+    branding_label = tk.Label(main_window, text="Jaden's Pizzeria!", bg="lightyellow", font=("Helvetica", 16))
+    branding_label.pack(pady=10)
+
+    # Pizza size selection
+    size_label = tk.Label(main_window, text="Select Pizza Size:", bg="lightyellow")
+    size_label.pack(pady=5)
+    sizes = ["Small", "Medium", "Large"]
+    for size in sizes:
+        tk.Radiobutton(main_window, text=size, variable=size_var, value=size, bg="lightyellow").pack(anchor=tk.W)
+
+    # Toppings selection
+    toppings_label = tk.Label(main_window, text="Select Toppings:", bg="lightyellow")
+    toppings_label.pack(pady=5)
+    toppings = ["Pepperoni", "Mushrooms", "Onions", "Sausage", "Bacon"]
+    for topping in toppings:
+        var = tk.BooleanVar()
+        toppings_vars[topping] = var
+        tk.Checkbutton(main_window, text=topping, variable=var, bg="lightyellow").pack(anchor=tk.W)
+
+    # Order status
+    order_status_label = tk.Label(main_window, textvariable=order_status, bg="lightyellow")
+    order_status_label.pack(pady=10)
+
+    # Buttons
+    place_order_button = tk.Button(main_window, text="Place Order", command=place_order)
+    place_order_button.pack(pady=5)
+
+    view_history_button = tk.Button(main_window, text="View Order History", command=view_order_history)
+    view_history_button.pack(pady=5)
+
+    exit_button = tk.Button(main_window, text="Exit", command=main_window.destroy)
+    exit_button.pack(pady=5)
+
+# Function to open the about window
+def open_about_window():
+    about_window = tk.Toplevel(root)
+    about_window.title("About")
+    about_window.geometry("300x200")
+    about_window.configure(bg="lightblue")
+
+    about_label = tk.Label(about_window, text="You can now order online! v1.0\nDeveloped by Jaden's Pizzeria", bg="lightblue", font=("Helvetica", 12))
+    about_label.pack(pady=20)
+
+    exit_button = tk.Button(about_window, text="Close", command=about_window.destroy)
+    exit_button.pack(pady=10)
+
 # Create the main window
 root = tk.Tk()
-root.title("Pizza Order Manager")
-root.geometry("400x400")
+root.title("Jaden's Pizzeria")
+root.geometry("600x700")
 root.configure(bg="lightyellow")
 
-# Branding
-branding_label = tk.Label(root, text="Welcome to Pizza Order Manager!", bg="lightyellow", font=("Helvetica", 16))
-branding_label.pack(pady=10)
+# Main window widgets
+main_label = tk.Label(root, text="Jaden's Pizzeria", bg="lightyellow", font=("Helvetica", 16))
+main_label.pack(pady=20)
 
-# Pizza size selection
-size_label = tk.Label(root, text="Select Pizza Size:", bg="lightyellow")
-size_label.pack(pady=5)
+main_image = tk.PhotoImage(file="pizza.png")  
+main_image_label = tk.Label(root, image=main_image, bg="lightyellow")
+main_image_label.pack(pady=10)
+
+main_button = tk.Button(root, text="Start Ordering", command=open_main_window)
+main_button.pack(pady=10)
+
+about_button = tk.Button(root, text="About", command=open_about_window)
+about_button.pack(pady=10)
+about_image = tk.PhotoImage(file="slice.png") 
+about_image_label = tk.Label(root, image=about_image, bg="lightyellow")
+about_image_label.pack(pady=10)
+
+exit_button = tk.Button(root, text="Exit", command=root.quit)
+exit_button.pack(pady=10)
+
+# Variables
 size_var = tk.StringVar(value="Medium")
-sizes = ["Small", "Medium", "Large"]
-for size in sizes:
-    tk.Radiobutton(root, text=size, variable=size_var, value=size, bg="lightyellow").pack(anchor=tk.W)
-
-# Toppings selection
-toppings_label = tk.Label(root, text="Select Toppings:", bg="lightyellow")
-toppings_label.pack(pady=5)
 toppings_vars = {}
-toppings = ["Pepperoni", "Mushrooms", "Onions", "Sausage", "Bacon"]
-for topping in toppings:
-    var = tk.BooleanVar()
-    toppings_vars[topping] = var
-    tk.Checkbutton(root, text=topping, variable=var, bg="lightyellow").pack(anchor=tk.W)
-
-# Order status
 order_status = tk.StringVar()
-order_status_label = tk.Label(root, textvariable=order_status, bg="lightyellow")
-order_status_label.pack(pady=10)
-
-# Buttons
-place_order_button = tk.Button(root, text="Place Order", command=place_order)
-place_order_button.pack(pady=5)
-
-view_history_button = tk.Button(root, text="View Order History", command=view_order_history)
-view_history_button.pack(pady=5)
-
-# Order history
 order_history = []
 
 # Run the application
 root.mainloop()
+
